@@ -2,10 +2,10 @@ import pytest
 
 from hexbytes import HexBytes
 from collector_engine.app.collectors.core.bytes_utils import (
-    b20_validate, 
-    b32_validate, 
-    b256_validate, 
-    convert_hex_to_bytes
+    b20_validate,
+    b32_validate,
+    b256_validate,
+    convert_hex_to_bytes,
 )
 
 FIELD = "block_hash"
@@ -14,11 +14,14 @@ B32 = 32
 B256 = 256
 
 
-@pytest.mark.parametrize("validator, expected_length", [
-    (b20_validate, B20),
-    (b32_validate, B32),
-    (b256_validate, B256),
-])
+@pytest.mark.parametrize(
+    "validator, expected_length",
+    [
+        (b20_validate, B20),
+        (b32_validate, B32),
+        (b256_validate, B256),
+    ],
+)
 def test_bytes_validate__success(validator, expected_length):
     data = b"\x00" * expected_length
 
@@ -28,11 +31,14 @@ def test_bytes_validate__success(validator, expected_length):
     assert isinstance(out, bytes)
 
 
-@pytest.mark.parametrize("validator, expected_length", [
-    (b20_validate, B20),
-    (b32_validate, B32),
-    (b256_validate, B256),
-])
+@pytest.mark.parametrize(
+    "validator, expected_length",
+    [
+        (b20_validate, B20),
+        (b32_validate, B32),
+        (b256_validate, B256),
+    ],
+)
 def test_byteslike_validate__success(validator, expected_length):
     data = bytearray(b"\x00" * expected_length)
 
@@ -71,16 +77,19 @@ def test_hex_to_bytes_none__success():
     assert convert_hex_to_bytes(None) is None
 
 
-@pytest.mark.parametrize("input,expected", [
-    (b"\x01\x02", b"\x01\x02"),                         # bytes
-    (bytearray(b"\x01\x02"), b"\x01\x02"),              # bytearray -> bytes
-    (memoryview(b"\x01\x02"), b"\x01\x02"),             # memoryview -> bytes
-    (HexBytes(b"\x01\x02"), b"\x01\x02"),               # HexBytes -> bytes
-    ("0x0102", b"\x01\x02"),                            # hex str with 0x
-    ("0102", b"\x01\x02"),                              # hex str without 0x
-    ("0x0A0b", b"\x0a\x0b"),                            # case-insensitive
-    ("0a 0b", b"\x0a\x0b"),                             # spaces tolerated by fromhex
-])
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        (b"\x01\x02", b"\x01\x02"),  # bytes
+        (bytearray(b"\x01\x02"), b"\x01\x02"),  # bytearray -> bytes
+        (memoryview(b"\x01\x02"), b"\x01\x02"),  # memoryview -> bytes
+        (HexBytes(b"\x01\x02"), b"\x01\x02"),  # HexBytes -> bytes
+        ("0x0102", b"\x01\x02"),  # hex str with 0x
+        ("0102", b"\x01\x02"),  # hex str without 0x
+        ("0x0A0b", b"\x0a\x0b"),  # case-insensitive
+        ("0a 0b", b"\x0a\x0b"),  # spaces tolerated by fromhex
+    ],
+)
 def test_hex_to_bytes__success(input, expected):
     result = convert_hex_to_bytes(input)
 
