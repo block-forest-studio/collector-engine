@@ -19,6 +19,7 @@ def convert_hex_to_bytes(x: BytesLike | HexBytes | str | None) -> bytes | None:
 
 def make_bytes_validator(expected_length: int) -> Callable[[BytesLike | None, str], bytes | None]:
     """Returns a function that validates the length of a bytes-like value is equal to `expected_length`."""
+
     def b_validate(value: BytesLike | None, field: str) -> bytes | None:
         if value is None:
             return None

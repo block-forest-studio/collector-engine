@@ -31,11 +31,11 @@ Fields description:
 - address: 20 bytes. The contract address that emitted the event.
 - topics: Array of 32-byte topic hashes. Used for indexed event paramaters.
   * the first topic (topics[0]) is always the Keccak-256 hash of the event signature, e.g.
-    Transfer(address,address,uint256) -> 0xddf252ad... 
+    Transfer(address,address,uint256) -> 0xddf252ad...
   * the following topics (topics[1], topics[2], ...) store the indexed arguments of that event.
   * you can use topics to filter logs effeciently without decoding all data.
 - data: 32-byte data field. A blob of unindexed event paramerers, ABI-encoded.
-  This contains the remaining (non-indexed) arguments of the event. 
+  This contains the remaining (non-indexed) arguments of the event.
   It's variable length - not necessarily exactly 32 bytes.
 - blockHash: 32-byte block hash that includes this log.
 - blockNumber: Block number that includes this log.
@@ -48,6 +48,7 @@ Fields description:
 """
 
 CHAIN_ID = 1
+
 
 def make_log(
     *,
@@ -83,8 +84,8 @@ def make_logs(n: int) -> list[dict[str, Any]]:
 
 def test_write_logs_to_buffer__success():
     logs = [
-        make_log(logIndex=1, topics=["0x" + "00"*32, "0x" + "01"*32], data="0xdeadbeef"),
-        make_log(logIndex=2, topics=["0x" + "02"*32], data="0x"),
+        make_log(logIndex=1, topics=["0x" + "00" * 32, "0x" + "01" * 32], data="0xdeadbeef"),
+        make_log(logIndex=2, topics=["0x" + "02" * 32], data="0x"),
     ]
 
     rows = write_logs_to_buffer(CHAIN_ID, logs)
@@ -93,8 +94,18 @@ def test_write_logs_to_buffer__success():
     assert len(rows) == 2
     for row in rows:
         assert set(row.keys()) == {
-            "chain_id","block_number","block_hash","transaction_hash","log_index",
-            "address","topic0","topic1","topic2","topic3","data","removed"
+            "chain_id",
+            "block_number",
+            "block_hash",
+            "transaction_hash",
+            "log_index",
+            "address",
+            "topic0",
+            "topic1",
+            "topic2",
+            "topic3",
+            "data",
+            "removed",
         }
         assert isinstance(row["chain_id"], int)
         assert isinstance(row["block_number"], int)
@@ -107,18 +118,24 @@ def test_write_logs_to_buffer__success():
         assert row["topic2"] is None or isinstance(row["topic2"], bytes)
         assert row["topic3"] is None or isinstance(row["topic3"], bytes)
         assert isinstance(row["data"], bytes)
-        assert isinstance(row["removed"], bool)    
+        assert isinstance(row["removed"], bool)
     assert rows[0]["log_index"] == 1
     assert rows[1]["log_index"] == 2
 
 
-@pytest.mark.parametrize("topics, expected", [
-    ([],                 [None, None, None, None]),
-    (["0x" + "00"*32],   ["bytes", None, None, None]),
-    (["0x" + "00"*32, "0x" + "01"*32], ["bytes", "bytes", None, None]),
-    (["0x" + "00"*32, "0x" + "01"*32, "0x" + "02"*32], ["bytes", "bytes", "bytes", None]),
-    (["0x" + "00"*32, "0x" + "01"*32, "0x" + "02"*32, "0x" + "03"*32], ["bytes", "bytes", "bytes", "bytes"]),
-])
+@pytest.mark.parametrize(
+    "topics, expected",
+    [
+        ([], [None, None, None, None]),
+        (["0x" + "00" * 32], ["bytes", None, None, None]),
+        (["0x" + "00" * 32, "0x" + "01" * 32], ["bytes", "bytes", None, None]),
+        (["0x" + "00" * 32, "0x" + "01" * 32, "0x" + "02" * 32], ["bytes", "bytes", "bytes", None]),
+        (
+            ["0x" + "00" * 32, "0x" + "01" * 32, "0x" + "02" * 32, "0x" + "03" * 32],
+            ["bytes", "bytes", "bytes", "bytes"],
+        ),
+    ],
+)
 def test_write_logs_to_buffer_topics_arity__success(topics, expected):
     log = make_log(topics=topics)
 
@@ -185,7 +202,7 @@ def test_write_logs_to_buffer_missing_topics_treated_as_success():
 
 
 def test_write_logs_to_buffer_input_not_mutated_success():
-    log = make_log(topics=["0x" + "00"*32])
+    log = make_log(topics=["0x" + "00" * 32])
     original = copy.deepcopy(log)
     _ = log_to_row(1, log)
 
@@ -194,11 +211,11 @@ def test_write_logs_to_buffer_input_not_mutated_success():
 
 def test_hexbytes_inputs_are_supported():
     log = make_log(
-        blockHash=HexBytes(b"\xaa"*32).hex(),
-        transactionHash=HexBytes(b"\xbb"*32).hex(),
-        address="0x" + "11"*20,
-        topics=["0x" + "00"*32],
-        data="0x"
+        blockHash=HexBytes(b"\xaa" * 32).hex(),
+        transactionHash=HexBytes(b"\xbb" * 32).hex(),
+        address="0x" + "11" * 20,
+        topics=["0x" + "00" * 32],
+        data="0x",
     )
 
     row = log_to_row(1, log)
