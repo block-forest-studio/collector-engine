@@ -5,7 +5,7 @@ from collector_engine.app.collectors.core.bytes_utils import (
     b20_validate,
     b32_validate,
     b256_validate,
-    convert_hex_to_bytes,
+    to_bytes,
 )
 
 FIELD = "block_hash"
@@ -74,7 +74,7 @@ def test_wrong_length_validate__error(validator, expected_length, bad_length):
 
 
 def test_hex_to_bytes_none__success():
-    assert convert_hex_to_bytes(None) is None
+    assert to_bytes(None) is None
 
 
 @pytest.mark.parametrize(
@@ -91,7 +91,7 @@ def test_hex_to_bytes_none__success():
     ],
 )
 def test_hex_to_bytes__success(input, expected):
-    result = convert_hex_to_bytes(input)
+    result = to_bytes(input)
 
     assert result == expected
     assert isinstance(result, bytes)
