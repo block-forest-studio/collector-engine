@@ -5,7 +5,7 @@ from typing import Callable
 BytesLike = bytes | bytearray | memoryview
 
 
-def convert_hex_to_bytes(x: BytesLike | HexBytes | str | None) -> bytes | None:
+def to_bytes(x: BytesLike | HexBytes | str | None) -> bytes | None:
     """Convert hex str/HexBytes/bytes-like to bytes. None -> None."""
     if x is None:
         return None
@@ -14,6 +14,9 @@ def convert_hex_to_bytes(x: BytesLike | HexBytes | str | None) -> bytes | None:
     if isinstance(x, str):
         s = x[2:] if x.startswith("0x") else x
         return bytes.fromhex(s)
+    if isinstance(x, int):
+        length = (x.bit_length() + 7) // 8
+        return x.to_bytes(length or 1, byteorder="big")
     return bytes(x)
 
 
