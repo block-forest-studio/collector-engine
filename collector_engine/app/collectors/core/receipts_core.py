@@ -1,5 +1,6 @@
 from typing import Any
 from web3.types import TxReceipt
+from collector_engine.app.collectors.core.buffer_utils import to_buffer
 from collector_engine.app.collectors.core.bytes_utils import (
     b20_validate,
     b32_validate,
@@ -93,4 +94,4 @@ def receipt_to_row(chain_id: int, receipt: TxReceipt) -> dict[str, Any]:
 
 
 def write_receipts_to_buffer(chain_id: int, receipts: list[TxReceipt]) -> list[dict[str, Any]]:
-    return list(map(lambda tx: receipt_to_row(chain_id, tx), receipts))
+    return to_buffer(chain_id, receipts, receipt_to_row)

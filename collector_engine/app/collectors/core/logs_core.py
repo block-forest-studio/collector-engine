@@ -1,5 +1,6 @@
 from typing import Any
 from web3.types import LogReceipt
+from collector_engine.app.collectors.core.buffer_utils import to_buffer
 from collector_engine.app.collectors.core.bytes_utils import (
     b20_validate,
     b32_validate,
@@ -26,4 +27,4 @@ def log_to_row(chain_id: int, log: LogReceipt) -> dict[str, Any]:
 
 
 def write_logs_to_buffer(chain_id: int, logs: list[LogReceipt]) -> list[dict[str, Any]]:
-    return list(map(lambda log: log_to_row(chain_id, log), logs))
+    return to_buffer(chain_id, logs, log_to_row)
