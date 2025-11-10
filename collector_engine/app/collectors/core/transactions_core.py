@@ -1,5 +1,6 @@
 from typing import Any
 from web3.types import TxData
+from collector_engine.app.collectors.core.buffer_utils import to_buffer
 from collector_engine.app.collectors.core.bytes_utils import (
     b20_validate,
     b32_validate,
@@ -73,4 +74,4 @@ def transaction_to_row(chain_id: int, tx: TxData, include_unmined: bool = False)
 
 
 def write_transactions_to_buffer(chain_id: int, transactions: list[TxData]) -> list[dict[str, Any]]:
-    return list(map(lambda tx: transaction_to_row(chain_id, tx), transactions))
+    return to_buffer(chain_id, transactions, transaction_to_row)
