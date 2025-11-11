@@ -1,5 +1,5 @@
 from typing import Any
-from web3.types import TxData
+from web3.types import TxData, AccessList
 from collector_engine.app.collectors.core.buffer_utils import to_buffer
 from collector_engine.app.collectors.core.bytes_utils import (
     b20_validate,
@@ -12,7 +12,7 @@ def _is_unmined(tx: TxData) -> bool:
     return tx.get("blockHash") is None
 
 
-def _normalize_access_list(access_list: list) -> list[dict[str, Any]]:
+def _normalize_access_list(access_list: AccessList | None) -> list[dict[str, Any]]:
     if not access_list:
         return []
     out = []
@@ -40,6 +40,7 @@ def transaction_to_row(chain_id: int, tx: TxData, include_unmined: bool = False)
     raw_block_hash = tx.get("blockHash")
     raw_block_number = tx.get("blockNumber")
     raw_tx_index = tx.get("transactionIndex")
+    access_list = tx.get("accessList")
 
     return {
         "chain_id": chain_id,
@@ -69,7 +70,7 @@ def transaction_to_row(chain_id: int, tx: TxData, include_unmined: bool = False)
         "r": b32_validate(to_bytes(tx["r"]), "r"),
         "s": b32_validate(to_bytes(tx["s"]), "s"),
         "y_parity": int(tx["yParity"]) if "yParity" in tx and tx["yParity"] is not None else None,
-        "access_list": _normalize_access_list(tx.get("accessList", [])),
+        "access_list": _normalize_access_list(access_list),
     }
 
 
