@@ -1,5 +1,8 @@
 import typer
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 app = typer.Typer()
 collector_app = typer.Typer(help="cli for collecting on chain data.")
