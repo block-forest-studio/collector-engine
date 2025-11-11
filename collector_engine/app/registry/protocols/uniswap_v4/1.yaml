@@ -1,0 +1,10 @@
+contracts:
+  - name: "PoolManager"
+    abi: "registry/abi/uniswap_v4/PoolManager.json"
+    address: "0x000000000004444c5dc75cB358380D2e3dE08A90"
+    genesis_block: 21688329
+
+  - name: "PositionDescriptor"
+    abi: "registry/abi/uniswap_v4/PositionDescriptor.json"
+    address: "0xd1428ba554f4c8450b763a0b2040a4935c63f06c"
+    genesis_block: 21688329

@@ -21,14 +21,16 @@ dependencies = [
   "inquirerpy>=0.3.4",
 ]
 
-[project.optional-dependencies]
-dev =[
+[dependency-groups]
+dev = [
   "pytest>=8.4.2,<9.0.0",
   "pytest-asyncio>=1.2.0,<2.0.0",
   "pytest-mock>=3.15.1,<4.0.0",
   "ipykernel>=6.29.5,<7.0.0",
   "mypy>=1.11.2,<2.0.0",
   "pre-commit>=3.7.0,<4.0.0",
+  "ruff>=0.14.4",
+  "types-PyYAML>=6.0.0,<7.0.0",
 ]
 
 [build-system]
@@ -61,9 +63,4 @@ module = [
   "web3.*",
   "eth_typing",
   "eth_typing.*",
-]
-
-[dependency-groups]
-dev = [
-    "ruff>=0.14.4",
 ]

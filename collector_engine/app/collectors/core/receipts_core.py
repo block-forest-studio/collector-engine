@@ -80,7 +80,7 @@ def receipt_to_row(chain_id: int, receipt: TxReceipt) -> dict[str, Any]:
         if receipt.get("contractAddress")
         else None,
         # status can be None (old clients) — schema has nullable=True
-        "status": int(receipt.get("status")) if receipt.get("status") is not None else None,
+        "status": int(receipt.get("status")) if receipt.get("status") is not None else None,  # type: ignore
         "type": int(rtype) if rtype is not None else None,
         "gas_used": int(receipt["gasUsed"]),
         "cumulative_gas_used": int(receipt["cumulativeGasUsed"]),
