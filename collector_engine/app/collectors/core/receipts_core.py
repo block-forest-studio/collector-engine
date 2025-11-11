@@ -1,5 +1,5 @@
 from typing import Any
-from web3.types import TxReceipt
+from web3.types import TxReceipt, LogReceipt
 from collector_engine.app.collectors.core.buffer_utils import to_buffer
 from collector_engine.app.collectors.core.bytes_utils import (
     b20_validate,
@@ -9,7 +9,7 @@ from collector_engine.app.collectors.core.bytes_utils import (
 )
 
 
-def normalize_logs(logs: list[dict]) -> list[dict]:
+def normalize_logs(logs: list[LogReceipt] | None) -> list[dict]:
     """
     Converts web3.py receipt['logs'] into a list of structures matching the schema:
     - struct<address: binary(20)
