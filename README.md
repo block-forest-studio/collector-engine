@@ -31,13 +31,13 @@ uv pip install -e ".[dev]"
 
 ## 🔧 Configuration
 
-Collector uses environment variables to connect to EVM RPC providers such as Alchemy, Infura, or Blast.
+Collector uses environment variables to configure application like connection to EVM RPC providers such as Alchemy, Infura, etc.
 
-Create a .env file in the project root:
+A sample configuration file is provided in .env.example.
+To get started, copy it and fill in your credentials:
 
 ```
-# .env
-# Example: Ethereum Mainnet via Alchemy
+cp .env.example .env
 ```
 
 ## 🧰 Usage (CLI)
@@ -45,9 +45,28 @@ Create a .env file in the project root:
 Collector exposes a CLI built with Typer.
 
 List available commands:
+
 ```
-...
+uv run python -m collector_engine.cli --help
 ```
+
+Run the main collector process:
+
+```
+uv run python -m collector_engine.cli collector run
+
+```
+
+## 🧱 Makefile Commands
+| Command	| Description |
+|-----------|-------------|
+| make run	| Run the collector (python -m collector_engine.cli collector run) |
+| make lint	| Run Ruff lint checks |
+| make format | Auto-fix lint issues with Ruff |
+| make test	| Run all tests with pytest |
+| make typecheck | Run static type checks using mypy |
+
+All commands automatically execute inside the uv environment.
 
 ## 🧪 Testing & Quality
 
