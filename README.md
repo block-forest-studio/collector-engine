@@ -8,9 +8,9 @@ and will later map the data into **relational SQL tables** to power analytics an
 
 ## ⚙️ Architecture
 
-Collector Engine follows the **Functional Core, Procedural Shell** design pattern:
+This project follows the **Functional Core / Imperative Shell** and **Ports & Adapters** architecture to keep logic pure and dependencies isolated.
 
-- **Functional Core** — pure, testable functions responsible for data parsing, transformation, and validation.
+- **Functional Core** — pure, testable functions responsible for data parsing, transformation, and validation, interfaces.
 - **Procedural Shell** — I/O, CLI, configuration, logging, and orchestration.
 
 

@@ -26,10 +26,25 @@ class AppConfig(BaseConfig):
 class Web3Config(BaseConfig):
     """Web3Config."""
 
-    infura_api_key: str = Field(..., alias="INFURA_API_KEY")
-    alchemy_api_key: str = Field(..., alias="ALCHEMY_API_KEY")
+    eth_provider_url: str = Field(..., alias="ETH_PROVIDER_URL")
+    base_provider_url: str = Field(..., alias="BASE_PROVIDER_URL")
+
     etherscan_api_key: str = Field(..., alias="ETHERSCAN_API_KEY")
     basescan_api_key: str = Field(..., alias="BASESCAN_API_KEY")
+
+    client_max_concurrency: int = Field(10, alias="CLIENT_MAX_CONCURRENCY")
+    client_request_timeout: int = Field(30, alias="CLIENT_REQUEST_TIMEOUT")
+
+    def rpc_url(self, chain_id: int) -> str:
+        """Return provider URL based on chain_id."""
+        mapping = {
+            1: self.eth_provider_url,
+            8453: self.base_provider_url,
+        }
+        try:
+            return mapping[chain_id]
+        except KeyError:
+            raise ValueError(f"No RPC URL defined for chain_id={chain_id}")
 
 
 app_config: AppConfig = AppConfig()  # type: ignore[call-arg]

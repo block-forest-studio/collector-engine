@@ -1,5 +1,5 @@
 run:
-	python -m collector_engine.cli collector run
+	uv run python -m collector_engine.cli collector run
 
 lint:
 	uv run ruff check .
