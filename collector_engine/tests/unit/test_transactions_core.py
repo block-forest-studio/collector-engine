@@ -7,7 +7,7 @@ import pytest
 from hexbytes import HexBytes
 from web3.types import TxData
 
-from collector_engine.app.collectors.core.transactions_core import (
+from collector_engine.app.core.transactions_core import (
     transaction_to_row,
     write_transactions_to_buffer,
 )

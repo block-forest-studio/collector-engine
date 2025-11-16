@@ -2,7 +2,7 @@ import copy
 import pytest
 from typing import Any
 from hexbytes import HexBytes
-from collector_engine.app.collectors.core.logs_core import write_logs_to_buffer, log_to_row
+from collector_engine.app.core.logs_core import write_logs_to_buffer, log_to_row
 
 
 """

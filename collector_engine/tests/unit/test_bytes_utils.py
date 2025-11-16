@@ -1,7 +1,7 @@
 import pytest
 
 from hexbytes import HexBytes
-from collector_engine.app.collectors.core.bytes_utils import (
+from collector_engine.app.core.bytes_utils import (
     b20_validate,
     b32_validate,
     b256_validate,

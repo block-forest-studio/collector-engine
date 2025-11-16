@@ -1,7 +1,7 @@
 from typing import Any
 from web3.types import TxData, AccessList
-from collector_engine.app.collectors.core.buffer_utils import to_buffer
-from collector_engine.app.collectors.core.bytes_utils import (
+from collector_engine.app.core.buffer_utils import to_buffer
+from collector_engine.app.core.bytes_utils import (
     b20_validate,
     b32_validate,
     to_bytes,
