@@ -2,14 +2,14 @@ import asyncio
 import pytest
 from typing import List
 
-from collector_engine.app.shell.adapters.evm.web3_reader import Web3EvmReader
+from collector_engine.app.shell.factories.evm_reader_factory import create_evm_reader
 
 PROVIDER_URL = "http://localhost"
 
 
 @pytest.mark.asyncio
 async def test_latest_block_number__success(monkeypatch):
-    reader = Web3EvmReader(PROVIDER_URL)
+    reader = create_evm_reader("web3", PROVIDER_URL)
 
     class DummyBlock:
         def __init__(self, number: int):
@@ -28,7 +28,7 @@ async def test_latest_block_number__success(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_logs__address_and_filter(monkeypatch):
-    reader = Web3EvmReader(PROVIDER_URL)
+    reader = create_evm_reader("web3", PROVIDER_URL)
     captured_filters: List[dict] = []
 
     async def fake_get_logs(filter_obj):
@@ -54,7 +54,7 @@ async def test_get_logs__address_and_filter(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_transactions__bytes_hash_conversion(monkeypatch):
-    reader = Web3EvmReader(PROVIDER_URL)
+    reader = create_evm_reader("web3", PROVIDER_URL)
     calls: List[str] = []
 
     async def fake_get_transaction(h: str):
@@ -73,7 +73,7 @@ async def test_get_transactions__bytes_hash_conversion(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_receipts__bytes_hash_conversion(monkeypatch):
-    reader = Web3EvmReader(PROVIDER_URL)
+    reader = create_evm_reader("web3", PROVIDER_URL)
     calls: List[str] = []
 
     async def fake_get_receipt(h: str):
@@ -92,7 +92,7 @@ async def test_get_receipts__bytes_hash_conversion(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_transactions__empty_input(monkeypatch):
-    reader = Web3EvmReader(PROVIDER_URL)
+    reader = create_evm_reader("web3", PROVIDER_URL)
 
     async def fake_get_transaction(h: str):
         raise AssertionError("Should not be called for empty input")
@@ -106,6 +106,9 @@ async def test_get_transactions__empty_input(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_get_transactions__concurrency_limit(monkeypatch):
+    # create_evm_reader currently ignores max_concurrency; instantiate underlying reader directly for concurrency test
+    from collector_engine.app.shell.adapters.evm.web3_reader import Web3EvmReader
+
     reader = Web3EvmReader(PROVIDER_URL, max_concurrency=2)
     current = 0
     max_seen = 0
