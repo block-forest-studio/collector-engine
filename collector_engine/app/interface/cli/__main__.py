@@ -3,8 +3,12 @@ import typer
 import inspect
 from dotenv import load_dotenv
 from InquirerPy import inquirer
-from collector_engine.app.registry.registry import get_protocols, get_chains, get_protocol_info
-from collector_engine.app.tasks import collector_tasks
+from collector_engine.app.infrastructure.registry.registry import (
+    get_protocols,
+    get_chains,
+    get_protocol_info,
+)
+from collector_engine.app.interface import collector_tasks
 
 
 load_dotenv()

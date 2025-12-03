@@ -1,7 +1,7 @@
 import os
 import yaml
 from pathlib import Path
-from collector_engine.app.registry.schemas import ProtocolInfo
+from collector_engine.app.infrastructure.registry.schemas import ProtocolInfo
 
 
 def get_chains(protocol: str) -> list[int]:

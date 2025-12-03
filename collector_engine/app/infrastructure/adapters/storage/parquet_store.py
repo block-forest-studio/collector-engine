@@ -8,7 +8,10 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from collector_engine.app.shell.helpers.parquet import get_pq_names, write_and_flush_if_needed
+from collector_engine.app.infrastructure.helpers.parquet import (
+    get_pq_names,
+    write_and_flush_if_needed,
+)
 
 
 class ParquetDatasetStore:
