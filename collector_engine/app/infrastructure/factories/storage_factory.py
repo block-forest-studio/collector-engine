@@ -1,8 +1,8 @@
 from typing import Callable, Dict
 from pathlib import Path
 
-from collector_engine.app.core.ports import DatasetStore
-from collector_engine.app.shell.adapters.storage.parquet_store import ParquetDatasetStore
+from collector_engine.app.domain.ports.out import DatasetStore
+from collector_engine.app.infrastructure.adapters.storage.parquet_store import ParquetDatasetStore
 
 DatasetStoreFactory = Callable[[str | Path], DatasetStore]
 

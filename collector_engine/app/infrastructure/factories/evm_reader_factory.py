@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Callable, Dict
 
-from collector_engine.app.core.ports import EvmReader
-from collector_engine.app.shell.adapters.evm.web3_reader import Web3EvmReader
+from collector_engine.app.domain.ports.out import EvmReader
+from collector_engine.app.infrastructure.adapters.evm.web3_reader import Web3EvmReader
 # from .jsonrpc_reader import JsonRpcEvmReader  # maybe later
 # from .fake_reader import FakeEvmReader       # for tests
 
@@ -16,7 +16,7 @@ _EVM_READER_REGISTRY: Dict[str, EvmReaderFactory] = {
 }
 
 
-def create_evm_reader(backend: str, provider_url: str) -> EvmReader:
+def evm_reader_factory(backend: str, provider_url: str) -> EvmReader:
     try:
         factory = _EVM_READER_REGISTRY[backend]
     except KeyError:
