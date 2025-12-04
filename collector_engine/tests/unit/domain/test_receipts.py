@@ -2,7 +2,7 @@ import copy
 import pytest
 from hexbytes import HexBytes
 
-from collector_engine.app.core.receipts_core import (
+from collector_engine.app.domain.pure.receipts import (
     receipt_to_row,
     write_receipts_to_buffer,
 )
