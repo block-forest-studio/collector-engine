@@ -44,7 +44,9 @@ def run() -> None:
     task = inquirer.select(
         message="Select task:",
         choices=[
-            name for name, _ in inspect.getmembers(collector_tasks, inspect.iscoroutinefunction)
+            name
+            for name, _ in inspect.getmembers(collector_tasks, inspect.iscoroutinefunction)
+            if name.endswith("_task")
         ],
         pointer="❯",
         instruction="Use ↑/↓ to move, Enter to select",
@@ -53,7 +55,6 @@ def run() -> None:
     async_functions = {
         name: func
         for name, func in inspect.getmembers(collector_tasks, inspect.iscoroutinefunction)
-        if name.endswith("_task")
     }
     task_func = async_functions[task]
 

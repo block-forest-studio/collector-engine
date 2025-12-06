@@ -20,7 +20,10 @@ class AppConfig(BaseConfig):
     """AppConfig."""
 
     project_name: str = Field(..., alias="PROJECT_NAME")
-    data_path: Path = Path(__file__).resolve().parent.parent.parent / "data"
+    data_path: Path = Field(
+        default_factory=lambda: Path(__file__).resolve().parents[4] / "data",
+        alias="DATA_PATH",
+    )
 
 
 class Web3Config(BaseConfig):
