@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Iterable, Sequence, Callable, Awaitable
 import asyncio
 from web3 import AsyncWeb3
+from web3.types import LogReceipt
 
 
 class Web3EvmReader:
@@ -25,15 +26,18 @@ class Web3EvmReader:
         blk = await self.w3.eth.get_block("latest")
         return int(blk.number)  # type: ignore[attr-defined]
 
-    async def get_logs(self, *, address: bytes, from_block: int, to_block: int) -> Sequence[dict]:
+    async def get_logs(
+        self, *, address: bytes, from_block: int, to_block: int
+    ) -> Sequence[LogReceipt]:
         addr_hex = "0x" + address.hex()
+        checksum_addr = self.w3.to_checksum_address(addr_hex)
         return await self.w3.eth.get_logs(
             {
                 "fromBlock": from_block,
                 "toBlock": to_block,
-                "address": addr_hex,  # type: ignore[typeddict-item]
+                "address": checksum_addr,
             }
-        )  # type: ignore[return-value]
+        )
 
     async def get_transactions(self, hashes: Iterable[bytes]) -> Sequence[dict]:
         coros = [self._lim(self._one(h, self.w3.eth.get_transaction)) for h in hashes]  # type: ignore[arg-type]

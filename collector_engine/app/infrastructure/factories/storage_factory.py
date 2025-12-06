@@ -7,7 +7,7 @@ from collector_engine.app.infrastructure.adapters.storage.parquet_store import P
 DatasetStoreFactory = Callable[[str | Path], DatasetStore]
 
 _STORAGE_REGISTRY: Dict[str, DatasetStoreFactory] = {
-    "parquet": lambda base_path: ParquetDatasetStore(base_path),  # type: ignore[dict-item, return-value]
+    "parquet": lambda base_path: ParquetDatasetStore(base_path),
     # "csv": lambda base_path: CsvDatasetStore(base_path),
     # "sql": lambda base_path: SqlDatasetStore(dsn, base_path)  # if needed
 }
