@@ -1,6 +1,6 @@
 # 🛳
-from typing import Protocol, Iterable, Sequence, Mapping, Any
-from web3.types import LogReceipt
+from typing import Protocol, Iterable, Sequence, Any
+from web3.types import LogReceipt, TxReceipt, TxData
 
 
 class EvmReader(Protocol):
@@ -8,8 +8,8 @@ class EvmReader(Protocol):
     async def get_logs(
         self, *, address: bytes, from_block: int, to_block: int
     ) -> Sequence[LogReceipt]: ...
-    async def get_transactions(self, hashes: Iterable[bytes]) -> Sequence[Mapping[str, Any]]: ...
-    async def get_receipts(self, hashes: Iterable[bytes]) -> Sequence[Mapping[str, Any]]: ...
+    async def get_transactions(self, hashes: Iterable[bytes]) -> Sequence[TxData]: ...
+    async def get_receipts(self, hashes: Iterable[bytes]) -> Sequence[TxReceipt]: ...
 
 
 class DatasetStore(Protocol):

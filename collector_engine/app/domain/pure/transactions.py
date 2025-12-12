@@ -1,4 +1,5 @@
 from typing import Any
+from eth_utils import to_hex
 from web3.types import TxData, AccessList
 from collector_engine.app.domain.pure.buffer_utils import to_buffer
 from collector_engine.app.domain.pure.bytes_utils import (
@@ -67,8 +68,8 @@ def transaction_to_row(chain_id: int, tx: TxData, include_unmined: bool = False)
         "value": int(tx["value"]),
         "type": int(tx["type"]) if "type" in tx and tx["type"] is not None else None,
         "v": int(tx["v"]),
-        "r": b32_validate(to_bytes(tx["r"]), "r"),
-        "s": b32_validate(to_bytes(tx["s"]), "s"),
+        "r": to_hex(tx["r"]),
+        "s": to_hex(tx["s"]),
         "y_parity": int(tx["yParity"]) if "yParity" in tx and tx["yParity"] is not None else None,
         "access_list": _normalize_access_list(access_list),
     }

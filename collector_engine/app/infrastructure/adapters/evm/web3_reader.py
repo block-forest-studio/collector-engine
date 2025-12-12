@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import Iterable, Sequence, Callable, Awaitable
+from typing import Iterable, Sequence, Callable, Awaitable, TypeVar
 import asyncio
 from web3 import AsyncWeb3
-from web3.types import LogReceipt
+from web3.types import LogReceipt, TxReceipt, TxData
+
+T = TypeVar("T")
 
 
 class Web3EvmReader:
@@ -14,12 +16,12 @@ class Web3EvmReader:
         )
         self._sem = asyncio.Semaphore(max_concurrency)
 
-    async def _lim(self, coro: Awaitable[dict]) -> dict:
+    async def _lim(self, coro: Awaitable[T]) -> T:
         async with self._sem:
             return await coro
 
     @staticmethod
-    async def _one(h: bytes, func: Callable[[str], Awaitable[dict]]) -> dict:
+    async def _one(h: bytes, func: Callable[[str], Awaitable[T]]) -> T:
         return await func("0x" + h.hex())
 
     async def latest_block_number(self) -> int:
@@ -39,10 +41,10 @@ class Web3EvmReader:
             }
         )
 
-    async def get_transactions(self, hashes: Iterable[bytes]) -> Sequence[dict]:
+    async def get_transactions(self, hashes: Iterable[bytes]) -> Sequence[TxData]:
         coros = [self._lim(self._one(h, self.w3.eth.get_transaction)) for h in hashes]  # type: ignore[arg-type]
         return await asyncio.gather(*coros)
 
-    async def get_receipts(self, hashes: Iterable[bytes]) -> Sequence[dict]:
+    async def get_receipts(self, hashes: Iterable[bytes]) -> Sequence[TxReceipt]:
         coros = [self._lim(self._one(h, self.w3.eth.get_transaction_receipt)) for h in hashes]  # type: ignore[arg-type]
         return await asyncio.gather(*coros)
