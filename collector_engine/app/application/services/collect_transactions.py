@@ -11,7 +11,7 @@ from collector_engine.app.domain.pure.buffer_utils import rows_to_column_buffer
 from collector_engine.app.application.services.flush_buffer import flush_buffer
 
 
-def _get_logs_files_for_processing(
+def _get_logs_files_to_processing(
     logs_names: list[str],
     tx_names: list[str],
 ) -> list[str]:
@@ -67,7 +67,7 @@ async def collect_transactions(
         )
         return
 
-    pq_names_for_processing = _get_logs_files_for_processing(log_files, tx_files)
+    pq_names_for_processing = _get_logs_files_to_processing(log_files, tx_files)
 
     if not pq_names_for_processing:
         logger.info(

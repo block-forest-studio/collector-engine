@@ -51,3 +51,40 @@ TX_SCHEMA = pa.schema(
         ),
     ]
 )
+
+RECEIPT_SCHEMA = pa.schema(
+    [
+        pa.field("block_hash", pa.binary(32), nullable=False),
+        pa.field("block_number", pa.int64(), nullable=False),
+        pa.field("transaction_hash", pa.binary(32), nullable=False),
+        pa.field("transaction_index", pa.int32(), nullable=False),
+        pa.field("from", pa.binary(20), nullable=False),
+        pa.field("to", pa.binary(20), nullable=True),
+        pa.field("contract_address", pa.binary(20), nullable=True),
+        pa.field("status", pa.int8(), nullable=True),
+        pa.field("type", pa.int32(), nullable=True),
+        pa.field("gas_used", pa.int64(), nullable=False),
+        pa.field("cumulative_gas_used", pa.int64(), nullable=False),
+        pa.field("effective_gas_price", pa.decimal128(38, 0), nullable=True),
+        pa.field("logs_bloom", pa.binary(256), nullable=True),
+        pa.field(
+            "logs",
+            pa.list_(
+                pa.struct(
+                    [
+                        pa.field("address", pa.binary(20), nullable=False),
+                        pa.field("block_hash", pa.binary(32), nullable=False),
+                        pa.field("block_number", pa.int64(), nullable=False),
+                        pa.field("block_timestamp", pa.int64(), nullable=True),
+                        pa.field("data", pa.binary(), nullable=False),
+                        pa.field("log_index", pa.int32(), nullable=False),
+                        pa.field("removed", pa.bool_(), nullable=False),
+                        pa.field("topics", pa.list_(pa.binary()), nullable=False),
+                        pa.field("transaction_hash", pa.binary(32), nullable=False),
+                        pa.field("transaction_index", pa.int32(), nullable=False),
+                    ]
+                )
+            ),
+        ),
+    ]
+)
