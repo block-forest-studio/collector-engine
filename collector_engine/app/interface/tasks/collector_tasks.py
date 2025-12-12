@@ -7,6 +7,7 @@ from collector_engine.app.infrastructure.factories.storage_factory import create
 from collector_engine.app.infrastructure.registry.registry import get_protocol_info
 from collector_engine.app.application.services.collect_logs import collect_logs
 from collector_engine.app.application.services.collect_transactions import collect_transactions
+from collector_engine.app.application.services.collect_receipts import collect_receipts
 
 
 async def logs_task(chain_id: int, protocol: str, contract_name: str) -> None:
@@ -59,4 +60,24 @@ async def transactions_task(chain_id: int, protocol: str, contract_name: str) ->
 
 async def receipts_task(chain_id: int, protocol: str, contract_name: str) -> None:
     """Collect receipts for a specific contract."""
-    print("receipts_task called")
+    reader: EvmReader = evm_reader_factory("web3", web3_config.rpc_url(chain_id))
+
+    base_path = Path(app_config.data_path) / protocol / contract_name
+    tx_store: DatasetStore = create_dataset_store("parquet", base_path / "transactions")
+    receipts_store: DatasetStore = create_dataset_store("parquet", base_path / "receipts")
+
+    protocol_info = get_protocol_info(chain_id, protocol)
+    try:
+        contract_info = next(c for c in protocol_info.contracts if c.name == contract_name)
+    except StopIteration:
+        raise ValueError(
+            f"Contract {contract_name!r} not found in protocol {protocol!r} for chain {chain_id}"
+        )
+
+    await collect_receipts(
+        chain_id=chain_id,
+        contract_info=contract_info,
+        reader=reader,
+        tx_store=tx_store,
+        receipts_store=receipts_store,
+    )
