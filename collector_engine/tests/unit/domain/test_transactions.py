@@ -110,8 +110,8 @@ def make_tx(
     value: int = 0,
     type_: int | None = 2,
     v: int = 27,
-    r: str | int | bytes = "0x" + "cc" * 32,
-    s: str | int | bytes = "0x" + "dd" * 32,
+    r: str | int | bytes = b"\xcc" * 32,
+    s: str | int | bytes = b"\xdd" * 32,
     yParity: int | None = None,
     accessList: list[dict[str, Any]] | None = None,
 ) -> TxData:
@@ -206,8 +206,8 @@ def test_write_transactions_to_buffer__success():
         assert isinstance(row["value"], int)
         assert row["type"] is None or isinstance(row["type"], int)
         assert isinstance(row["v"], int)
-        assert isinstance(row["r"], bytes)
-        assert isinstance(row["s"], bytes)
+        assert isinstance(row["r"], str) and row["r"].startswith("0x") and len(row["r"]) == 66
+        assert isinstance(row["s"], str) and row["s"].startswith("0x") and len(row["s"]) == 66
         assert row["y_parity"] is None or isinstance(row["y_parity"], int)
         assert isinstance(row["access_list"], list)
 
@@ -272,22 +272,18 @@ def test_transaction_to_row_invalid_txhash__error():
     assert str(exc.value) == "hash: expected 32 bytes, got 31"
 
 
-def test_transaction_to_row_invalid_r__error():
-    bad = make_tx(r="0x" + "cc" * 31)  # 31 bytes instead of 32
-
-    with pytest.raises(ValueError) as exc:
-        transaction_to_row(CHAIN_ID, bad)
-
-    assert str(exc.value) == "r: expected 32 bytes, got 31"
+def test_transaction_to_row_r_length_reflected_in_hex__success():
+    short = make_tx(r=b"\xcc" * 31)
+    row = transaction_to_row(CHAIN_ID, short)
+    assert isinstance(row["r"], str) and row["r"].startswith("0x")
+    assert len(row["r"]) == 2 + 31 * 2
 
 
-def test_transaction_to_row_invalid_s__error():
-    bad = make_tx(s="0x" + "dd" * 31)  # 31 bytes instead of 32
-
-    with pytest.raises(ValueError) as exc:
-        transaction_to_row(CHAIN_ID, bad)
-
-    assert str(exc.value) == "s: expected 32 bytes, got 31"
+def test_transaction_to_row_s_length_reflected_in_hex__success():
+    short = make_tx(s=b"\xdd" * 31)
+    row = transaction_to_row(CHAIN_ID, short)
+    assert isinstance(row["s"], str) and row["s"].startswith("0x")
+    assert len(row["s"]) == 2 + 31 * 2
 
 
 def test_transaction_to_row_access_list__success():
@@ -346,5 +342,5 @@ def test_transaction_to_row_hexbytes_inputs_supported__success():
 
     assert isinstance(row["block_hash"], bytes)
     assert isinstance(row["hash"], bytes)
-    assert isinstance(row["r"], bytes)
-    assert isinstance(row["s"], bytes)
+    assert isinstance(row["r"], str) and row["r"].startswith("0x")
+    assert isinstance(row["s"], str) and row["s"].startswith("0x")
