@@ -8,7 +8,7 @@ from collector_engine.app.infrastructure.registry.registry import (
     get_chains,
     get_protocol_info,
 )
-from collector_engine.app.interface import collector_tasks
+from collector_engine.app.interface.tasks import collector_tasks
 
 
 load_dotenv()
