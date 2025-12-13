@@ -7,41 +7,14 @@ It efficiently collects **logs, transactions, and receipts**, stores them in **P
 
 # ⚙️ Architecture Overview
 
-Collector Engine follows a combination of:
+Collector Engine is built using **Clean Architecture principles** with
+**Ports & Adapters**, emphasizing:
 
-- **Onion / Hexagonal Architecture (Clean Architecture)**
-- **Ports & Adapters**
-- **Functional Core inside the Domain**
+- strict separation between domain logic and infrastructure
+- replaceable Web3 and storage backends
+- deterministic, testable data pipelines
 
-This ensures clean separation of concerns, high testability, and long-term extensibility.
-
-## 🧅 Layer Breakdown
-
-        +-----------------------------+
-        |         Interface           |
-        |  CLI, scheduler, runners   |
-        +--------------+--------------+
-                       ↓
-        +-----------------------------+
-        |        Infrastructure       |
-        |  Web3 adapters, storage     |
-        |  adapters (Parquet/CSV/SQL) |
-        |  config, registry           |
-        +--------------+--------------+
-                       ↓
-        +-----------------------------+
-        |        Application          |
-        |  Usecases (collect_logs,    |
-        |  collect_txs, etc.)         |
-        +--------------+--------------+
-                       ↓
-        +-----------------------------+
-        |           Domain            |
-        |  Ports (EvmReader,          |
-        |  DatasetStore),             |
-        |  pure functions, entities   |
-        +-----------------------------+
-
+A detailed architectural breakdown is available in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ### 🔹 Domain (Core)
 Pure business logic:
@@ -87,6 +60,26 @@ User-facing entry points:
 - Future: REST API, schedulers, UI
 
 > This layer wires together the adapters and usecases.
+
+---
+
+## 🔄 Data Lifecycle
+
+Collector Engine processes on-chain data in three sequential stages:
+
+1. **Logs**
+   - Ethereum event logs are collected per contract and block range
+   - Stored as `logs_*.parquet`
+
+2. **Transactions**
+   - Transactions are derived from collected logs
+   - Stored as `txs_*.parquet`
+
+3. **Receipts**
+   - Transaction receipts are fetched and normalized
+   - Stored as `receipts_*.parquet`
+
+Each stage is resumable, idempotent, and can be re-run independently.
 
 ---
 
