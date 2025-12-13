@@ -1,4 +1,4 @@
-# LEGO-style Architecture Overview
+# 🧱 LEGO-style Architecture Overview
 
 Think of the project as a LEGO set.
 Each block has a precise shape, a clear responsibility, and can only connect in certain directions.
