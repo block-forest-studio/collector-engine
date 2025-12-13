@@ -14,7 +14,7 @@ Collector Engine is built using **Clean Architecture principles** with
 - replaceable Web3 and storage backends
 - deterministic, testable data pipelines
 
-A detailed architectural breakdown is available in [`ARCHITECTURE.md`](ARCHITECTURE.md).
+A detailed architectural breakdown is available in [`architecture.md`](architecture.md).
 
 ### 🔹 Domain (Core)
 Pure business logic:
