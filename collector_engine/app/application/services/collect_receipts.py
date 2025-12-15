@@ -129,16 +129,16 @@ async def collect_receipts(
                 index_field="transaction_index",
             )
 
-    buffer = flush_buffer(
-        buffer=buffer,
-        store=receipts_store,
-        rows_per_file=rows_per_file,
-        force=True,
-        schema=RECEIPT_SCHEMA,
-        file_prefix="receipts",
-        block_field="block_number",
-        index_field="transaction_index",
-    )
+        buffer = flush_buffer(
+            buffer=buffer,
+            store=receipts_store,
+            rows_per_file=rows_per_file,
+            force=True,
+            schema=RECEIPT_SCHEMA,
+            file_prefix="receipts",
+            block_field="block_number",
+            index_field="transaction_index",
+        )
 
     logger.info(
         "Finished receipts collection for {} on chain {}.",

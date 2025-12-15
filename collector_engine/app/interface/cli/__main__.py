@@ -1,6 +1,5 @@
 import asyncio
 import typer
-import inspect
 from dotenv import load_dotenv
 from InquirerPy import inquirer
 from collector_engine.app.infrastructure.registry.registry import (
@@ -8,7 +7,7 @@ from collector_engine.app.infrastructure.registry.registry import (
     get_chains,
     get_protocol_info,
 )
-from collector_engine.app.interface.tasks import collector_tasks
+from collector_engine.app.interface.tasks import TASKS
 
 
 load_dotenv()
@@ -41,24 +40,14 @@ def run() -> None:
         instruction="Use ↑/↓ to move, Enter to select",
     ).execute()
 
-    task = inquirer.select(
+    task_name = inquirer.select(
         message="Select task:",
-        choices=[
-            name
-            for name, _ in inspect.getmembers(collector_tasks, inspect.iscoroutinefunction)
-            if name.endswith("_task")
-        ],
+        choices=list(TASKS.keys()),
         pointer="❯",
         instruction="Use ↑/↓ to move, Enter to select",
     ).execute()
 
-    async_functions = {
-        name: func
-        for name, func in inspect.getmembers(collector_tasks, inspect.iscoroutinefunction)
-    }
-    task_func = async_functions[task]
-
-    asyncio.run(task_func(chain_id=chain, protocol=protocol, contract_name=contract_name))
+    asyncio.run(TASKS[task_name](chain_id=chain, protocol=protocol, contract_name=contract_name))  # type: ignore
 
 
 if __name__ == "__main__":
