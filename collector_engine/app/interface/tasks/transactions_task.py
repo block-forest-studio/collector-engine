@@ -5,7 +5,9 @@ from collector_engine.app.domain.ports.out import EvmReader, DatasetStore
 from collector_engine.app.infrastructure.factories.evm_reader_factory import evm_reader_factory
 from collector_engine.app.infrastructure.factories.storage_factory import create_dataset_store
 from collector_engine.app.infrastructure.registry.registry import get_protocol_info
-from collector_engine.app.application.services.collect_transactions import collect_transactions
+from collector_engine.app.application.services.collectors.collect_transactions import (
+    collect_transactions,
+)
 
 
 async def transactions_task(chain_id: int, protocol: str, contract_name: str) -> None:

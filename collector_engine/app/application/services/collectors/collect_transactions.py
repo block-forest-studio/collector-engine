@@ -41,6 +41,14 @@ def _extract_unique_tx_hashes(table: pa.Table) -> list[bytes]:
     return [bytes(v) for v in unique.to_pylist()]
 
 
+def _sort_by_from_block(names: list[str], prefix: str) -> list[str]:
+    def from_block(name: str) -> int:
+        # logs_123_456.parquet / txs_123_456.parquet
+        return int(name.removeprefix(prefix).removesuffix(".parquet").split("_")[0])
+
+    return sorted(names, key=from_block)
+
+
 async def collect_transactions(
     *,
     chain_id: int,
@@ -67,7 +75,10 @@ async def collect_transactions(
         )
         return
 
-    pq_names_for_processing = _get_logs_files_to_processing(log_files, tx_files)
+    pq_names_for_processing = _sort_by_from_block(
+        _get_logs_files_to_processing(log_files, tx_files),
+        prefix="logs_",
+    )
 
     if not pq_names_for_processing:
         logger.info(

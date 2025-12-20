@@ -4,9 +4,11 @@ from loguru import logger
 from collector_engine.app.infrastructure.registry.schemas import ContractInfo
 from collector_engine.app.domain.ports.out import EvmReader, DatasetStore
 
-from collector_engine.app.application.services.collect_logs import collect_logs
-from collector_engine.app.application.services.collect_transactions import collect_transactions
-from collector_engine.app.application.services.collect_receipts import collect_receipts
+from collector_engine.app.application.services.collectors.collect_logs import collect_logs
+from collector_engine.app.application.services.collectors.collect_transactions import (
+    collect_transactions,
+)
+from collector_engine.app.application.services.collectors.collect_receipts import collect_receipts
 
 
 @dataclass(frozen=True)
