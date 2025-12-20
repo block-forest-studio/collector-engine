@@ -2,7 +2,7 @@ import pytest
 import pyarrow as pa
 
 from collector_engine.app.infrastructure.adapters.storage.parquet_store import ParquetDatasetStore
-from collector_engine.app.application.services.collect_logs import collect_logs
+from collector_engine.app.application.services.collectors.collect_logs import collect_logs
 from collector_engine.app.infrastructure.registry.schemas import ContractInfo
 
 

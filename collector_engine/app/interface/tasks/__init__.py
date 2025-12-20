@@ -6,6 +6,7 @@ from .logs_task import logs_task
 from .transactions_task import transactions_task
 from .receipts_task import receipts_task
 from .pipeline_task import pipeline_task
+from .validate_pipeline_datasets_task import validate_pipeline_datasets_task
 
 TaskFn = Callable[[int, str, str], Awaitable[None]]
 
@@ -14,4 +15,5 @@ TASKS: dict[str, TaskFn] = {
     "transactions_task": transactions_task,
     "receipts_task": receipts_task,
     "pipeline_task": pipeline_task,
+    "validate_pipeline_datasets_task": validate_pipeline_datasets_task,
 }
