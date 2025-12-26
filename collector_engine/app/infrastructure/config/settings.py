@@ -24,6 +24,7 @@ class AppConfig(BaseConfig):
         default_factory=lambda: Path(__file__).resolve().parents[4] / "data",
         alias="DATA_PATH",
     )
+    postgres_dsn: str = Field(..., alias="POSTGRES_DSN")
 
 
 class Web3Config(BaseConfig):

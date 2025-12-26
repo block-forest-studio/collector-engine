@@ -54,6 +54,7 @@ TX_SCHEMA = pa.schema(
 
 RECEIPT_SCHEMA = pa.schema(
     [
+        pa.field("chain_id", pa.int64(), nullable=False),
         pa.field("block_hash", pa.binary(32), nullable=False),
         pa.field("block_number", pa.int64(), nullable=False),
         pa.field("transaction_hash", pa.binary(32), nullable=False),

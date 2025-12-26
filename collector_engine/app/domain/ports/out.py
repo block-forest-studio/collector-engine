@@ -1,5 +1,8 @@
 # 🛳
-from typing import Protocol, Iterable, Sequence, Any
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Protocol, Iterable, Sequence, Any, Literal
 from web3.types import LogReceipt, TxReceipt, TxData
 
 
@@ -24,3 +27,16 @@ class DatasetStore(Protocol):
         rows_per_file: int,
         force: bool = False,
     ) -> dict[str, list]: ...
+
+
+DatasetName = Literal["logs", "txs", "receipts"]
+
+
+class DatasetLoader(Protocol):
+    def load_parquet_dir(
+        self,
+        *,
+        parquet_dir: Path,
+        dataset: DatasetName,
+        file_prefix: str,
+    ) -> None: ...

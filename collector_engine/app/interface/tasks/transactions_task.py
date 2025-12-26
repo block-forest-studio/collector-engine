@@ -3,7 +3,7 @@ from pathlib import Path
 from collector_engine.app.infrastructure.config.settings import app_config, web3_config
 from collector_engine.app.domain.ports.out import EvmReader, DatasetStore
 from collector_engine.app.infrastructure.factories.evm_reader_factory import evm_reader_factory
-from collector_engine.app.infrastructure.factories.storage_factory import create_dataset_store
+from collector_engine.app.infrastructure.factories.storage_factory import storage_factory
 from collector_engine.app.infrastructure.registry.registry import get_protocol_info
 from collector_engine.app.application.services.collectors.collect_transactions import (
     collect_transactions,
@@ -15,8 +15,8 @@ async def transactions_task(chain_id: int, protocol: str, contract_name: str) ->
     reader: EvmReader = evm_reader_factory("web3", web3_config.rpc_url(chain_id))
 
     base_path = Path(app_config.data_path) / protocol / contract_name
-    logs_store: DatasetStore = create_dataset_store("parquet", base_path / "logs")
-    tx_store: DatasetStore = create_dataset_store("parquet", base_path / "transactions")
+    logs_store: DatasetStore = storage_factory("parquet", base_path / "logs")
+    tx_store: DatasetStore = storage_factory("parquet", base_path / "transactions")
 
     protocol_info = get_protocol_info(chain_id, protocol)
     try:

@@ -19,6 +19,7 @@ dependencies = [
   "ipykernel>=6.29.5,<7.0.0",
   "notebook>=7.4.5,<8.0.0",
   "inquirerpy>=0.3.4",
+  "psycopg>=3.3.2",
 ]
 
 [dependency-groups]
