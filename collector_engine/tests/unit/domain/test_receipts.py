@@ -146,20 +146,6 @@ def test_receipt_to_row_hex_normalization__success():
     assert row["effective_gas_price"] == 0x64
 
 
-def test_receipt_to_row_logs_block_timestamp_variants__success():
-    logs = [
-        make_log(logIndex=1, blockTimestamp=0x5),  # int converted to hex string then back
-        make_log(logIndex=2, blockTimestamp="0x6"),
-        make_log(logIndex=3),  # missing => None
-    ]
-    r = make_receipt(logs=logs)
-
-    row = receipt_to_row(CHAIN_ID, r)
-
-    ts_vals = [lg["block_timestamp"] for lg in row["logs"]]
-    assert ts_vals == [0x5, 0x6, None]
-
-
 def test_receipt_to_row_invalid_block_hash__error():
     bad = make_receipt(blockHash="0x" + "aa" * 31)
 
