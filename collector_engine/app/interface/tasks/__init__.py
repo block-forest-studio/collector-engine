@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 
+from collector_engine.app.interface.tasks.load_to_sql_task import load_to_sql_task
+
 from .logs_task import logs_task
 from .transactions_task import transactions_task
 from .receipts_task import receipts_task
@@ -16,4 +18,5 @@ TASKS: dict[str, TaskFn] = {
     "receipts_task": receipts_task,
     "pipeline_task": pipeline_task,
     "validate_pipeline_datasets_task": validate_pipeline_datasets_task,
+    "load_to_sql_task": load_to_sql_task,
 }

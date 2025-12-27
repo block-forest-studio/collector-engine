@@ -13,7 +13,7 @@ _STORAGE_REGISTRY: Dict[str, DatasetStoreFactory] = {
 }
 
 
-def create_dataset_store(backend: str, base_path: str | Path) -> DatasetStore:
+def storage_factory(backend: str, base_path: str | Path) -> DatasetStore:
     try:
         factory = _STORAGE_REGISTRY[backend]
     except KeyError:
