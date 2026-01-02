@@ -15,7 +15,6 @@ def normalize_logs(logs: list[LogReceipt] | None) -> list[dict]:
     - struct<address: binary(20)
     - block_hash: binary(32)
     - block_number: int64
-    - block_timestamp: int64? (optional)
     - data: binary
     - log_index: int32
     - removed: bool
@@ -25,24 +24,11 @@ def normalize_logs(logs: list[LogReceipt] | None) -> list[dict]:
     """
     result = []
     for lg in logs or []:
-        # blockTimestamp sometimes is added by some providers (optional)
-        block_ts = lg.get("blockTimestamp")
-        if isinstance(block_ts, str) and block_ts.startswith("0x"):
-            try:
-                block_ts = int(block_ts, 16)
-            except Exception:
-                block_ts = None
-        elif isinstance(block_ts, int):
-            pass
-        else:
-            block_ts = None
-
         result.append(
             {
                 "address": b20_validate(to_bytes(lg["address"]), "address"),
                 "block_hash": b32_validate(to_bytes(lg["blockHash"]), "block_hash"),
                 "block_number": int(lg["blockNumber"]),
-                "block_timestamp": block_ts,  # nullable
                 "data": to_bytes(lg["data"]),
                 "log_index": int(lg["logIndex"]),
                 "removed": bool(lg.get("removed", False)),
