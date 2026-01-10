@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Iterable, Sequence, Callable, Awaitable, TypeVar
 import asyncio
 from web3 import AsyncWeb3
-from web3.types import LogReceipt, TxReceipt, TxData
+from web3.types import LogReceipt, TxReceipt, TxData, BlockData
 
 T = TypeVar("T")
 
@@ -48,3 +48,14 @@ class Web3EvmReader:
     async def get_receipts(self, hashes: Iterable[bytes]) -> Sequence[TxReceipt]:
         coros = [self._lim(self._one(h, self.w3.eth.get_transaction_receipt)) for h in hashes]  # type: ignore[arg-type]
         return await asyncio.gather(*coros)
+
+    async def get_block(self, number: int) -> BlockData:
+        return await self._lim(self.w3.eth.get_block(number, full_transactions=False))
+
+    async def get_blocks_range(self, from_block: int, to_block: int) -> Sequence[BlockData]:
+        if to_block < from_block:
+            return []
+
+        coros = [self.get_block(n) for n in range(from_block, to_block + 1)]
+        blocks: Sequence[BlockData] = await asyncio.gather(*coros)
+        return blocks

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Protocol, Iterable, Sequence, Any, Literal
-from web3.types import LogReceipt, TxReceipt, TxData
+from web3.types import LogReceipt, TxReceipt, TxData, BlockData
 
 
 class EvmReader(Protocol):
@@ -13,6 +13,8 @@ class EvmReader(Protocol):
     ) -> Sequence[LogReceipt]: ...
     async def get_transactions(self, hashes: Iterable[bytes]) -> Sequence[TxData]: ...
     async def get_receipts(self, hashes: Iterable[bytes]) -> Sequence[TxReceipt]: ...
+    async def get_block(self, number: int) -> BlockData: ...
+    async def get_blocks_range(self, from_block: int, to_block: int) -> Sequence[BlockData]: ...
 
 
 class DatasetStore(Protocol):
@@ -29,7 +31,7 @@ class DatasetStore(Protocol):
     ) -> dict[str, list]: ...
 
 
-DatasetName = Literal["logs", "txs", "receipts"]
+DatasetName = Literal["logs", "txs", "receipts", "blocks"]
 
 
 class DatasetLoader(Protocol):

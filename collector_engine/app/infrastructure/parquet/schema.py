@@ -89,3 +89,17 @@ RECEIPT_SCHEMA = pa.schema(
         ),
     ]
 )
+
+BLOCK_SCHEMA = pa.schema(
+    [
+        pa.field("chain_id", pa.int64(), nullable=False),
+        pa.field("block_number", pa.int64(), nullable=False),
+        pa.field("block_hash", pa.binary(32), nullable=False),
+        pa.field("parent_hash", pa.binary(32), nullable=False),
+        pa.field("timestamp", pa.int64(), nullable=False),
+        pa.field("base_fee_per_gas", pa.decimal128(38, 0), nullable=True),
+        pa.field("gas_used", pa.int64(), nullable=True),
+        pa.field("gas_limit", pa.int64(), nullable=True),
+        pa.field("tx_count", pa.int32(), nullable=False),
+    ]
+)

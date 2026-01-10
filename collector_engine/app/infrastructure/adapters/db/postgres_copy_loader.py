@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
@@ -138,10 +139,36 @@ RECEIPTS_COPY_SPEC = CopySpec(
     },
 )
 
+BLOCKS_COPY_SPEC = CopySpec(
+    table="analytics.blocks",
+    columns=[
+        "chain_id",
+        "block_number",
+        "block_hash",
+        "parent_hash",
+        "timestamp",  # unix epoch seconds in Parquet -> timestamptz in DB
+        "base_fee_per_gas",
+        "gas_used",
+        "gas_limit",
+        "tx_count",
+    ],
+    kinds={
+        "chain_id": "int",
+        "block_number": "int",
+        "block_hash": "bytes",
+        "parent_hash": "bytes",
+        "timestamp": "ts",  # custom kind: epoch -> datetime(tz=UTC)
+        "base_fee_per_gas": "num",
+        "gas_used": "int",
+        "gas_limit": "int",
+        "tx_count": "int",
+    },
+)
+
 
 class PostgresCopyLoader(DatasetLoader):
     """
-    DatasetLoader implementation using PostgreSQL COPY ... FORMAT binary
+    DatasetLoader implementation using PostgreSQL COPY ... FORMAT text
     + temporary table  and INSERT ... ON CONFLICT.
     """
 
@@ -170,6 +197,8 @@ class PostgresCopyLoader(DatasetLoader):
             return TXS_COPY_SPEC
         if dataset == "receipts":
             return RECEIPTS_COPY_SPEC
+        if dataset == "blocks":
+            return BLOCKS_COPY_SPEC
         raise ValueError(f"Unknown dataset: {dataset!r}")
 
     def _copy_parquet_dir(
@@ -309,6 +338,12 @@ class PostgresCopyLoader(DatasetLoader):
                 elif kind == "json":
                     # list/dict -> jsonb, ensure bytes are JSON-serializable
                     row.append(Jsonb(_json_safe(val)))
+                elif kind == "ts":
+                    # unix epoch seconds -> timestamptz (UTC)
+                    # Parquet daje tu int (np. 1740051563)
+                    ts_int = int(val)
+                    dt = datetime.fromtimestamp(ts_int, tz=timezone.utc)
+                    row.append(dt)
                 else:
                     raise ValueError(f"Unknown kind {kind!r} for column {col_name!r}")
 
