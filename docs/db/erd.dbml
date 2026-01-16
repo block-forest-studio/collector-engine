@@ -1,0 +1,157 @@
+// erd_dbdiagram_physical.dbml
+// Generated from psql \d+ output (schemas: raw, staging, analytics)
+// NOTE: dbdiagram.io does NOT support the [schema: ...] setting.
+// We flatten schema into table name prefixes: raw_*, staging_*, analytics_*.
+//
+// Physical schema only:
+// - Tables, columns, PKs, indexes
+// - No foreign keys (none defined in PostgreSQL at generation time)
+
+Table raw.logs {
+  chain_id integer [not null]
+  block_number bigint [not null]
+  block_hash bytea [not null]
+  transaction_hash bytea [not null]
+  log_index integer [not null]
+  address bytea [not null]
+  topic0 bytea
+  topic1 bytea
+  topic2 bytea
+  topic3 bytea
+  data bytea [not null]
+  removed boolean [not null]
+
+  Indexes {
+    (chain_id, transaction_hash, log_index) [pk, name: "logs_pk"]
+    (chain_id, block_number) [name: "logs_block_idx"]
+  }
+}
+
+Table raw.transactions {
+  chain_id integer [not null]
+  hash bytea [not null]
+  block_number bigint
+  block_hash bytea
+  transaction_index integer
+  from bytea [not null]
+  to bytea
+  gas bigint [not null]
+  gas_price numeric
+  max_fee_per_gas numeric
+  max_priority_fee_per_gas numeric
+  input bytea [not null]
+  nonce bigint [not null]
+  value numeric [not null]
+  type integer
+  v bigint [not null]
+  r text [not null]
+  s text [not null]
+  y_parity integer
+  access_list jsonb [not null, default: `'[]'::jsonb`]
+
+  Indexes {
+    (chain_id, hash) [pk, name: "txs_pk"]
+    (chain_id, block_number) [name: "txs_block_idx"]
+  }
+}
+
+Table raw.receipts {
+  chain_id integer [not null]
+  transaction_hash bytea [not null]
+  block_number bigint [not null]
+  block_hash bytea [not null]
+  transaction_index integer [not null]
+  from bytea [not null]
+  to bytea
+  contract_address bytea
+  status integer
+  type integer
+  gas_used bigint [not null]
+  cumulative_gas_used bigint [not null]
+  effective_gas_price numeric
+  logs_bloom bytea
+  logs jsonb [not null, default: `'[]'::jsonb`]
+
+  Indexes {
+    (chain_id, transaction_hash) [pk, name: "receipts_pk"]
+    (chain_id, block_number) [name: "receipts_block_idx"]
+  }
+}
+
+Table staging.evm_event_logs {
+  chain_id integer [not null]
+  block_number bigint [not null]
+  transaction_hash bytea [not null]
+  transaction_index integer [not null]
+  log_index integer [not null]
+  tx_from bytea [not null]
+  tx_to bytea
+  tx_value numeric [not null]
+  tx_type smallint
+  tx_status smallint
+  tx_gas_used bigint
+  tx_cumulative_gas_used bigint
+  tx_effective_gas_price numeric
+  address bytea [not null]
+  topic0 bytea
+  topic1 bytea
+  topic2 bytea
+  topic3 bytea
+  data bytea [not null]
+
+  Indexes {
+    (chain_id, block_number, log_index) [pk, name: "evm_event_logs_pkey"]
+    (chain_id, address, topic0, block_number) [name: "ix_logs_chain_address_topic0_block"]
+    (chain_id, transaction_hash) [name: "ix_logs_chain_txhash"]
+  }
+}
+
+Table analytics.evm_events {
+  chain_id integer [not null]
+  block_number bigint [not null]
+  transaction_hash bytea [not null]
+  transaction_index integer [not null]
+  log_index integer [not null]
+  tx_gas_used bigint
+  tx_effective_gas_price numeric
+  tx_value numeric [not null]
+  tx_from_address bytea [not null]
+  tx_to_address bytea
+  contract_address bytea [not null]
+  event_name text [not null]
+  event_signature text [not null]
+
+  Indexes {
+    (chain_id, transaction_hash, log_index) [pk, name: "evm_events_pkey"]
+    (chain_id, contract_address, event_name, block_number) [name: "ix_analytics_events_chain_contract_event_block"]
+    (chain_id, transaction_hash) [name: "ix_analytics_events_chain_tx"]
+  }
+}
+
+Table analytics.blocks {
+  chain_id integer [not null]
+  block_number bigint [not null]
+  block_hash bytea [not null]
+  parent_hash bytea [not null]
+  timestamp timestamptz [not null]
+  base_fee_per_gas numeric(38,0)
+  gas_used bigint
+  gas_limit bigint
+  tx_count integer
+
+  Indexes {
+    (chain_id, block_number) [pk, name: "blocks_pkey"]
+    (chain_id, block_hash) [name: "ix_analytics_blocks_chain_hash"]
+    (chain_id, timestamp) [name: "ix_analytics_blocks_chain_timestamp"]
+  }
+}
+
+Table analytics.event_signatures {
+  topic0 bytea [not null]
+  event_name text [not null]
+  event_signature text [not null]
+
+  Indexes {
+    (topic0) [pk, name: "event_signatures_pkey"]
+  }
+}
