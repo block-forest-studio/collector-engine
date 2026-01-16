@@ -1,53 +1,66 @@
 # 🪄 Collector Engine
 
-**Collector Engine** is a modular on-chain data indexer for **EVM-based DeFi protocols**.
-It efficiently collects **logs, transactions, and receipts**, stores them in **Parquet**, and is designed to later export the processed data into **relational SQL tables** powering analytics and API services.
+Collector Engine is a modular on-chain data ingestion service for **EVM-based protocols**.
+
+Its responsibility is to **extract raw blockchain data**, normalize it, and persist it in
+**columnar Parquet datasets** and **canonical SQL tables**, forming the immutable foundation
+for downstream indexing, analytics, and APIs.
+
+Collector Engine writes:
+- **contract-scoped immutable data** into the `raw` schema,
+- **chain-scoped canonical block metadata** into `analytics.blocks`.
+
+Collector Engine is **not an analytics engine**.
+It is the **source-of-truth data ingestion layer**
 
 ---
 
-# ⚙️ Architecture Overview
+## ⚙️ Architecture Overview
 
-Collector Engine is built using **Clean Architecture principles** with
-**Ports & Adapters**, emphasizing:
+Collector Engine follows **Clean Architecture** and **Ports & Adapters** principles:
 
-- strict separation between domain logic and infrastructure
-- replaceable Web3 and storage backends
-- deterministic, testable data pipelines
+- strict separation of concerns
+- deterministic, replayable pipelines
+- replaceable infrastructure (RPC, storage, SQL loaders)
 
-A detailed architectural breakdown is available in [`architecture.md`](architecture.md).
+A detailed architecture description is available in [`architecture.md`](docs/architecture.md).
+
+---
+
+## 🧱 Layered Architecture
 
 ### 🔹 Domain (Core)
-Pure business logic:
 
-- **Ports (interfaces)**: `EvmReader`, `DatasetStore`
-- **Pure functions**: parsing, validation, mapping (e.g. `log_to_row`)
-- **Domain models** (entities, if needed)
+Pure, side-effect-free logic:
 
-> No I/O. No Web3. No filesystem. Pure and testable.
+- **Ports (interfaces)**:
+  - `EvmReader`
+  - `DatasetStore`
+  - `DatasetLoader`
+- **Pure transformations**
+- **No I/O**
+- **Fully testable**
 
 ---
 
-### 🔹 Application Layer (Usecases)
+### 🔹 Application Layer (Use Cases)
 
-Coordinates domain logic:
+Orchestrates domain logic:
 
-- Defines **what** happens during log/tx/receipt collection.
-- Uses **ports**, not concrete implementations.
-- No Web3 calls, no file access.
+- defines **collection workflows**
+- enforces idempotency and resumability
+- coordinates ports
 
 ---
 
 ### 🔹 Infrastructure Layer
 
-Concrete implementations of ports:
+Concrete adapters:
 
-- **Web3 adapters** (`Web3EvmReader`)
-- **Storage adapters** (Parquet, CSV, SQL)
-- **Registry** loader (YAML protocol configs, ABI)
-- **Config** (Pydantic settings)
-- **Factories** (reader & storage selection)
-
-> Replaceable at runtime — e.g., switch from Web3.py to another backend.
+- Web3 adapters
+- Parquet & PostgreSQL loaders
+- Protocol registry
+- Configuration & factories
 
 ---
 
@@ -55,37 +68,41 @@ Concrete implementations of ports:
 
 User-facing entry points:
 
-- **CLI** (`collector_engine.cli`)
-- **Task runners** (`collector_tasks`)
-- Future: REST API, schedulers, UI
-
-> This layer wires together the adapters and usecases.
+- CLI
+- Task runners
 
 ---
 
 ## 🔄 Data Lifecycle
 
-Collector Engine processes on-chain data in three sequential stages:
-
-1. **Logs**
-   - Ethereum event logs are collected per contract and block range
-   - Stored as `logs_*.parquet`
-
-2. **Transactions**
-   - Transactions are derived from collected logs
-   - Stored as `txs_*.parquet`
-
-3. **Receipts**
-   - Transaction receipts are fetched and normalized
-   - Stored as `receipts_*.parquet`
-
-Each stage is resumable, idempotent, and can be re-run independently.
+1. Logs → Parquet + raw.logs
+2. Transactions → Parquet + raw.transactions
+3. Receipts → Parquet + raw.receipts
+4. Blocks → Parquet + analytics.blocks
 
 ---
 
-# 🚀 Installation
+## 🗄️ Database Responsibility Model
 
-Requires **Python ≥ 3.13** and [uv](https://github.com/astral-sh/uv).
+| Schema      | Responsibility            |
+|------------|---------------------------|
+| raw        | Immutable blockchain data |
+| staging    | Indexer responsibility   |
+| analytics  | Partial (blocks only)     |
+
+---
+
+## 🧩 Database Bootstrap
+
+Before loading data, initialize RAW schema:
+
+```bash
+make db-migrate
+```
+
+---
+
+## 🚀 Installation
 
 ```bash
 uv venv --python 3.13
@@ -93,74 +110,16 @@ source .venv/bin/activate
 uv pip install -e ".[dev]"
 ```
 
-# 🔧 Configuration
+---
 
-Collector uses environment variables to configure RPC providers and API keys.
+## 🧰 CLI Usage
 
-Copy the example file:
-```bash
-cp .env.example .env
-```
-Fill in your RPC URLs (Alchemy, Infura, etc.) and API credentials.
-
-# 🧰 Usage (CLI)
-
-List available commands:
 ```bash
 uv run python -m collector_engine.cli --help
 ```
 
-Run the collector:
-```bash
-uv run python -m collector_engine.cli collector run
-```
-
-## 🧱 Makefile Commands
-
-| Command          | Description                                               |
-|------------------|-----------------------------------------------------------|
-| `make run`       | Run the collector CLI                                     |
-| `make lint`      | Run Ruff lint checks                                      |
-| `make format`    | Auto-fix lint issues with Ruff                            |
-| `make test`      | Run tests with pytest                                     |
-| `make typecheck` | Run mypy static type checks                               |
-
-All commands execute within the uv-managed environment.
-
 ---
 
-## 🧪 Testing & Quality
+## 🪪 License
 
-Run tests:
-
-```bash
-pytest
-```
-
-Lint and type check:
-```bash
-pre-commit run --all-files
-```
-
-Tooling Stack
-
-🧹 Ruff — linting & formatting
-🆎 Mypy — static typing
-🧪 Pytest — testing
-🔄 Pre-commit — automated quality checks
-
-# 🤝 Contributing
-
-Contributions are welcome!
-See CONTRIBUTING.md for guidelines.
-
-We welcome:
-
-- new DeFi protocol integrations
-- new storage or Web3 adapters
-- performance improvements
-- documentation updates
-
-# 🪪 License
-
-Licensed under the Apache 2.0 License.
+Apache 2.0

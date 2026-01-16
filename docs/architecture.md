@@ -33,7 +33,7 @@ Contents:
 
 Rules:
 - Domain imports nothing from infrastructure
-- Domain can be unit-tested without mocks
+- Domain logic can be unit-tested without mocks
 
 ### 2. APPLICATION — “Instruction Manual” block
 
@@ -69,6 +69,10 @@ Instead, it coordinates other blocks.
 These are the blocks that actually touch the outside world.
 
 They plug into domain ports and make them real.
+
+Infrastructure may include SQL loaders, but never owns schema definitions.
+DDL and schema evolution are handled separately via migrations.
+
 
 #### Examples:
 
@@ -180,3 +184,23 @@ If you break these rules, LEGO blocks stop fitting.
 - Clear ownership of logic
 - No accidental coupling to Web3 / Parquet
 - Natural extension to new protocols, chains, or storage backends
+
+## Data Scope Model
+
+Collector Engine handles two distinct data scopes:
+
+### Contract-scoped data
+Bound to a specific protocol contract:
+- logs
+- transactions
+- receipts
+
+These datasets are collected per contract and stored under
+contract-specific paths and SQL tables.
+
+### Chain-scoped data
+Independent of protocols and contracts:
+- blocks (timestamps, gas, base fee)
+
+Chain-scoped data is collected once per chain and serves as
+canonical reference data for downstream indexing.
